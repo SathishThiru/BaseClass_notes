@@ -16,3 +16,9 @@ switchTab
 close a particular tab
 highlight a webelement
 etc.,
+
+Version 2:
+added
+excelReadSingleCell()
+excelReadRow()
+excelReadAll()
