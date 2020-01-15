@@ -22,3 +22,8 @@ added
 excelReadSingleCell()
 excelReadRow()
 excelReadAll()
+
+version 3:
+excelWriteSingleCell()
+excelWriteRow()
+excelWriteDynamic()
