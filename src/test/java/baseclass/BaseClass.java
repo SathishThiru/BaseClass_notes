@@ -5,11 +5,14 @@ import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -333,5 +336,84 @@ public class BaseClass
 			
 		return strList;
 	}
+	
+	//write a value in once cell
+	public static void excelWriteSingleCell(String filePath, String sheetName, int rowNum, int cellNum, String cellValue) throws IOException
+	{
+		FileOutputStream fos = new FileOutputStream(filePath);
+		Workbook w = new XSSFWorkbook();		
+		Sheet s = w.createSheet(sheetName);
+		Row r = s.createRow(rowNum);
+		Cell c = r.createCell(cellNum);
+		c.setCellValue(cellValue);
+		w.write(fos);
+	}
+	
+	//write values in a row
+	public static void excelWriteRow(String filePath, String sheetName, int rowNum, List<String> cellValues) throws IOException
+	{
+		FileOutputStream fos = new FileOutputStream(filePath);
+		Workbook w = new XSSFWorkbook();		
+		Sheet s = w.createSheet(sheetName);
+		Row r = s.createRow(rowNum);
+		for(int i = 0; i<cellValues.size(); i++) 
+		{
+			Cell c = r.createCell(i);
+			c.setCellValue(cellValues.get(i));
+		}
+		
+		w.write(fos);
+		
+	}
+	
+	//write values in excel dynamically multiple rows
+	public static void excelWriteDynamic() throws IOException
+	{
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Please enter the file path : ");
+		String filePath = sc.nextLine();
+		FileOutputStream fos = new FileOutputStream(filePath);
+		Workbook w = new XSSFWorkbook();
+		System.out.println("Please enter the sheet name: ");
+		String sheetName = sc.nextLine();
+		Sheet s = w.createSheet(sheetName);
+		System.out.println("Please enter the number of rows : ");
+		int numberOfRows = sc.nextInt();
+		//String s1 = new String(sc.nextLine());//this is a dummy line - else we will get errors while using nextLine() below
+		String cellValue;
+		
+		for(int i = 0; i<numberOfRows; i++)
+		{
+			int count =0;
+			Row r = s.createRow(i);
+			System.out.println("Please enter the number of elements you want to fill in row " +(i+1));
+			int numberOfCells = sc.nextInt();
+			
+			for(int j = 0; j<numberOfCells; j++)
+			{
+				if(count==0)
+				{
+					String s1 = sc.nextLine();
+					count++;
+				}
+				Cell c = r.createCell(j);
+				System.out.println("please enter the value of cell " +(j+1) +" in row " +(i+1)+" : ");
+			
+				cellValue = sc.nextLine();
+				System.out.println("the value is : "+cellValue);
+				//sc.next() - if we use this, everything is working fine
+				//sc.nextLine() - it is automatically taking the first input
+				//as a 'space'. it is only accepting input from 2nd time.
+				//above if condition is to solve this problem
+				//see explanation below
+				//https://www.geeksforgeeks.org/why-is-scanner-skipping-nextline-after-use-of-other-next-functions/
+				c.setCellValue(cellValue);
+			}
+			
+		}
+		w.write(fos);
+		
+	}
+	
 	
 }
