@@ -4,12 +4,21 @@ import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -252,5 +261,77 @@ public class BaseClass
 		returnJSObj().executeScript(higlightColor, e);
 	}
 	
+	
+	//Excel read: this method takes file path of the excel, sheet name, row and cell number as arguments
+	public static String excelReadSingleCell(String filePath, String sheetName, int rowNum, int cellNum) throws IOException
+	{
+		String cellValue = null;
+		FileInputStream fis = new FileInputStream(filePath);
+		Workbook w = new XSSFWorkbook(fis);
+		Sheet s = w.getSheet(sheetName);
+		Row r = s.getRow(rowNum);
+		Cell c = r.getCell(cellNum);
+		int cellTypeNum = c.getCellType();
+		
+		if(cellTypeNum==1)
+		{
+			cellValue = c.getStringCellValue();
+		}
+		
+		else if(cellTypeNum == 0)
+		{
+			if(DateUtil.isCellDateFormatted(c))
+			{
+				Date dateValue = c.getDateCellValue();
+				SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yy");
+				cellValue = sdf.format(dateValue);
+			}
+			
+			else
+			{
+				double d = c.getNumericCellValue();
+				long l = (long)d;
+				cellValue = String.valueOf(l);
+			}
+		}
+		
+		return cellValue;
+	}
+	
+	//Excel read one full row
+	public static List<String> excelReadRow(String filePath, String sheetName, int rowNum) throws IOException
+	{
+		List<String> strList = new ArrayList<String>();
+		
+		FileInputStream fis = new FileInputStream(filePath);
+		Workbook w = new XSSFWorkbook(fis);
+		Sheet s = w.getSheet(sheetName);
+		Row r = s.getRow(rowNum);
+		int numberOfCells = r.getPhysicalNumberOfCells();
+		
+		for(int i =0 ; i<numberOfCells; i++)
+		{
+			strList.add(excelReadSingleCell(filePath, sheetName, rowNum, i));
+		}
+	return strList;
+	}
+	
+	//read all elements in an excel
+	public static List<String> excelReadAll(String filePath, String sheetName) throws IOException
+	{
+		List<String> strList = new ArrayList<String>();
+		
+		FileInputStream fis = new FileInputStream(filePath);
+		Workbook w = new XSSFWorkbook(fis);
+		Sheet s = w.getSheet(sheetName);
+		
+		for(int i =0; i<s.getPhysicalNumberOfRows();i++)
+		{
+			strList.addAll(excelReadRow(filePath, sheetName, i));
+			//excelReadRow(filePath, sheetName, i);
+		}
+			
+		return strList;
+	}
 	
 }
