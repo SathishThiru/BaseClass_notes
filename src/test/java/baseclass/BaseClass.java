@@ -5,7 +5,6 @@ import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -415,5 +414,9 @@ public class BaseClass
 		
 	}
 	
+	public void Priya ()
+	{
+		System.out.println("I Am Priya");
+	}
 	
 }
